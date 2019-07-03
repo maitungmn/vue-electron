@@ -2,9 +2,7 @@
   <v-app>
       <v-content>
         <v-container class="mt-4">
-          <transition name="fade">
-            <router-view />
-          </transition>
+          <router-view />
         </v-container>
       </v-content>
     </v-app>
