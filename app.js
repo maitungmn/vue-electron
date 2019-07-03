@@ -1,10 +1,15 @@
 const electron = require('electron')
 const app = electron.app
 const BrowserWindow = electron.BrowserWindow
+const Menu = electron.Menu
+const MenuItem = electron.MenuItem
 const windowStateKeeper = require('electron-window-state')
 
 let win
 let url
+let mainWindow
+let mainMenu = Menu.buildFromTemplate(require('./mainMenu'))
+
 if (process.env.NODE_ENV === 'DEV') {
   url = 'http://localhost:8080/'
 } else {
@@ -31,7 +36,23 @@ app.on('ready', () => {
   // and restore the maximized or full screen state
   mainWindowState.manage(win);
 
-  let contents = win.webContents
-
   win.loadURL(url)
+
+  // Set up menu items
+  Menu.setApplicationMenu(mainMenu)
+
+  // Listen for window being closed
+  win.on('closed', () => {
+    win = null
+  })
+})
+
+// Quit when all windows are closed - (Not macOS - Darwin)
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit()
+})
+
+// When app icon is clicked and app is running, (macOS) recreate the BrowserWindow
+app.on('activate', () => {
+  if (mainWindow === null) createWindow()
 })
